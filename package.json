@@ -1,0 +1,30 @@
+{
+  "name": "abishek-portfolio",
+  "version": "1.0.0",
+  "description": "Abishek Kumar's Portfolio Website - Cybersecurity Researcher & Web Developer",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "dev": "concurrently \"npm run watch:css\" \"python app.py\"",
+    "production": "npm run build:css"
+  },
+  "keywords": [
+    "portfolio",
+    "flask",
+    "tailwindcss",
+    "cybersecurity",
+    "web-development"
+  ],
+  "author": "Abishek Kumar <abishek.techy@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "tailwindcss": "^3.4.19"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Abishek-Kumar-GHub/Portfolio"
+  },
+  "homepage": "https://www.theabishek.space"
+}

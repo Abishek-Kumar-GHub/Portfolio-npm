@@ -1,0 +1,196 @@
+<!-- templates/research.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  Research - Abishek Kumar
+{% endblock %}
+
+{% block content %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" />
+  <div class="space-y-8">
+    <div class="text-center scroll-reveal">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4 dark:text-white">Research & Publications</h1>
+      <p class="text-xl text-gray-600 mb-8 dark:text-white">My contributions to Cyber Security and technology research</p>
+    </div>
+
+    <!-- Research Projects -->
+    <section class="bg-white rounded-2xl p-8 shadow-lg scroll-reveal">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8 dark:text-white">Research Projects</h2>
+      <div class="space-y-8">
+        {% for project in research_projects %}
+          <div class="rounded-xl border-l-4 border-blue-500 pl-6 py-4 scroll-reveal dark:bg-gray-900">
+            <h3 class="text-xl font-bold text-gray-800 mb-2 dark:text-white">{{ project.title }}</h3>
+            <p class="text-blue-600 font-medium mb-2 dark:text-blue-600">{{ project.department }}</p>
+            <p class="text-gray-500 text-sm mb-4 dark:text-gray-400">{{ project.duration }}</p>
+            <p class="text-gray-700 leading-relaxed dark:text-white">{{ project.description }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Medium Publications -->
+    <section class="bg-white rounded-2xl p-8 shadow-lg scroll-reveal">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8 dark:text-white">Medium Publications</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for pub in publications %}
+          <div class="p-6 border border-gray-200 rounded-xl card-hover scroll-reveal">
+            <div class="flex items-center justify-between mb-4">
+              <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium dark:text-orange-500 dark:bg-gray-700">{{ pub.platform }}</span>
+              <i class="fab fa-medium text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-3 dark:text-white">{{ pub.title }}</h3>
+            <p class="text-gray-600 text-sm mb-4 dark:text-white">{{ pub.description }}</p>
+            <a href="{{ pub.url }}" target="_blank" class="inline-flex items-center gap-2 text-orange-600 dark:text-orange-500 hover:text-orange-800 font-medium">
+              <i class="fas fa-external-link-alt"></i>
+              Read Article
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- CTF Write-ups & Blogs Section -->
+    <section class="bg-white rounded-2xl p-8 shadow-lg scroll-reveal">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white">CTF Write-ups & Security Blogs</h2>
+        <a href="{{ url_for('articles') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          View All Articles
+          <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Article 1: CloudSek Hiring CTF Round 2 -->
+        <a href="{{ url_for('article_ctf_round2') }}" class="block group scroll-reveal">
+          <div class="border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all">
+            <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 text-white">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">CTF Write-up</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">Security</span>
+              </div>
+              <h3 class="text-2xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">CloudSek Hiring CTF - Round 2</h3>
+              <p class="text-blue-100 text-sm">December 2025</p>
+            </div>
+            <div class="p-6">
+              <p class="text-gray-600 mb-4 dark:text-gray-300">Comprehensive write-up covering four security challenges: NITRO automation, XXE injection, PHP type confusion in MFA, and Android APK reverse engineering with JWT forgery.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">XXE</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">JWT</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Type Confusion</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Mobile Security</span>
+              </div>
+              <div class="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
+                Read Full Article
+                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Article 2: Boot Sequence CTF -->
+        <a href="{{ url_for('article_boot_sequence') }}" class="block group scroll-reveal">
+          <div class="border border-gray-200 rounded-xl overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all">
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-700 p-6 text-white">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">CTF Write-up</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">SSTI</span>
+              </div>
+              <h3 class="text-2xl font-bold mb-2 group-hover:text-yellow-300 transition-colors">Boot Sequence - CloudSek Hiring CTF</h3>
+              <p class="text-indigo-100 text-sm">December 2025</p>
+            </div>
+            <div class="p-6">
+              <p class="text-gray-600 mb-4 dark:text-gray-300">Deep dive into exploiting an orbital relay system through JWT forgery, privilege escalation, and Server-Side Template Injection leading to Remote Code Execution.</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">SSTI</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">JWT Cracking</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">RCE</span>
+                <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Jinja2</span>
+              </div>
+              <div class="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
+                Read Full Article
+                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Research Interests -->
+    <section class="bg-white rounded-2xl p-8 shadow-lg scroll-reveal dark:bg-gray-800">
+      <h2 class="text-3xl font-bold text-gray-800 mb-8 dark:text-white">Research Interests</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl text-center scroll-reveal dark:from-blue-900 dark:to-blue-800">
+          <i class="fas fa-cloud-upload-alt text-3xl text-blue-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">Cloud Security</h3>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl text-center scroll-reveal dark:from-red-900 dark:to-red-800">
+          <i class="fas fa-globe text-3xl text-red-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">Web Application Security</h3>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl text-center scroll-reveal dark:from-green-900 dark:to-green-800">
+          <i class="fas fa-mobile-alt text-3xl text-green-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">Mobile Security</h3>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl text-center scroll-reveal dark:from-purple-900 dark:to-purple-800">
+          <i class="fas fa-database text-3xl text-purple-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">Database Forensics</h3>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl text-center scroll-reveal dark:from-yellow-900 dark:to-yellow-800">
+          <i class="fas fa-wifi text-3xl text-yellow-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">IoT Security</h3>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl text-center scroll-reveal dark:from-indigo-900 dark:to-indigo-800">
+          <i class="fas fa-brain text-3xl text-indigo-600 mb-4"></i>
+          <h3 class="font-semibold text-gray-800 dark:text-white">ML Security</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research Impact -->
+    <section class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-8 scroll-reveal dark:from-gray-800 dark:to-gray-700">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4 dark:text-white">Research Impact</h2>
+        <p class="text-gray-600 max-w-3xl mx-auto dark:text-white">My research focuses on practical cyber secrurity solutions and knowledge dissemination through academic publications and technical articles.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="text-center p-6 bg-white rounded-xl shadow-sm scroll-reveal">
+          <div class="text-3xl font-bold text-blue-600 mb-2">3+</div>
+          <div class="text-gray-600">Research Projects</div>
+        </div>
+        <div class="text-center p-6 bg-white rounded-xl shadow-sm scroll-reveal">
+          <div class="text-3xl font-bold text-green-600 mb-2">4+</div>
+          <div class="text-gray-600">Published Articles</div>
+        </div>
+        <div class="text-center p-6 bg-white rounded-xl shadow-sm scroll-reveal">
+          <div class="text-3xl font-bold text-purple-600 mb-2">2+</div>
+          <div class="text-gray-600">Years Research</div>
+        </div>
+        <div class="text-center p-6 bg-white rounded-xl shadow-sm scroll-reveal">
+          <div class="text-3xl font-bold text-orange-600 mb-2">100+</div>
+          <div class="text-gray-600">Citations</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Scroll reveal animation
+    const scrollRevealElements = document.querySelectorAll('.scroll-reveal')
+    
+    const scrollReveal = () => {
+      scrollRevealElements.forEach((element) => {
+        const elementTop = element.getBoundingClientRect().top
+        const elementVisible = 150
+    
+        if (elementTop < window.innerHeight - elementVisible) {
+          element.classList.add('active')
+        }
+      })
+    }
+    
+    window.addEventListener('scroll', scrollReveal)
+    scrollReveal() // Initial check
+  </script>
+{% endblock %}

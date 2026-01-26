@@ -1,0 +1,247 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300;
+  }
+  
+  /* Better font rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Scroll reveal animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  
+  .scroll-reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+           transition-all duration-300 shadow-lg hover:shadow-xl 
+           font-medium inline-flex items-center gap-2;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 
+           rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 
+           transition-all duration-300 font-medium inline-flex items-center gap-2;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 
+           transition-all duration-300 hover:shadow-xl;
+  }
+  
+  .card-hover {
+    @apply card hover:-translate-y-1;
+  }
+  
+  /* Link styles */
+  .link-primary {
+    @apply text-blue-600 dark:text-blue-400 hover:text-blue-700 
+           dark:hover:text-blue-300 transition-colors duration-200 
+           underline-offset-4 hover:underline;
+  }
+  
+  /* Code block styles */
+  .code-block {
+    @apply bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto 
+           font-mono text-sm leading-relaxed;
+  }
+  
+  /* Badge styles */
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center;
+  }
+  
+  .badge-blue {
+    @apply badge bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300;
+  }
+  
+  .badge-green {
+    @apply badge bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300;
+  }
+  
+  .badge-red {
+    @apply badge bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300;
+  }
+  
+  .badge-yellow {
+    @apply badge bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300;
+  }
+  
+  .badge-purple {
+    @apply badge bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300;
+  }
+  
+  /* Alert boxes */
+  .alert {
+    @apply p-6 rounded-lg border-l-4 my-8;
+  }
+  
+  .alert-info {
+    @apply alert bg-blue-50 dark:bg-gray-800 border-blue-500;
+  }
+  
+  .alert-success {
+    @apply alert bg-green-50 dark:bg-gray-800 border-green-500;
+  }
+  
+  .alert-warning {
+    @apply alert bg-yellow-50 dark:bg-gray-800 border-yellow-500;
+  }
+  
+  .alert-error {
+    @apply alert bg-red-50 dark:bg-gray-800 border-red-500;
+  }
+  
+  /* Article prose styling */
+  .article-content {
+    @apply prose prose-lg max-w-none dark:prose-invert
+           prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
+           prose-p:text-gray-600 dark:prose-p:text-gray-300
+           prose-a:text-blue-600 dark:prose-a:text-blue-400
+           prose-code:bg-gray-100 dark:prose-code:bg-gray-800 
+           prose-code:px-2 prose-code:py-1 prose-code:rounded
+           prose-pre:bg-gray-900 prose-pre:text-green-400
+           prose-strong:text-gray-900 dark:prose-strong:text-white;
+  }
+  
+  /* Navigation active state */
+  .nav-link {
+    @apply px-4 py-2 rounded-lg transition-all duration-200 
+           hover:bg-gray-100 dark:hover:bg-gray-800;
+  }
+  
+  .nav-link.active {
+    @apply bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-blue-purple {
+    @apply bg-gradient-to-br from-blue-500 to-purple-600;
+  }
+  
+  .gradient-indigo-purple {
+    @apply bg-gradient-to-br from-indigo-500 to-purple-700;
+  }
+  
+  .gradient-green-blue {
+    @apply bg-gradient-to-br from-green-500 to-blue-500;
+  }
+  
+  /* Filter button states */
+  .filter-btn {
+    @apply px-4 py-2 rounded-lg transition-all duration-200 
+           cursor-pointer font-medium;
+  }
+  
+  .filter-btn.active {
+    @apply bg-blue-600 text-white shadow-lg;
+  }
+  
+  .filter-btn:not(.active) {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white 
+           hover:bg-gray-200 dark:hover:bg-gray-600;
+  }
+}
+
+@layer utilities {
+  /* Text wrapping */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.7);
+  }
+  
+  /* Custom animations */
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.6s ease-in-out;
+  }
+  
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg;
+  }
+  
+  /* Container max-widths */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Smooth transitions for dark mode */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Focus visible styles for accessibility */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-blue-600 dark:outline-blue-400;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-blue-600 text-white;
+}
+
+::-moz-selection {
+  @apply bg-blue-600 text-white;
+}

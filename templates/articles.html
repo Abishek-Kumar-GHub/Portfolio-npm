@@ -1,0 +1,203 @@
+<!-- templates/articles.html -->
+{% extends "base.html" %}
+
+{% block title %}Articles - Abishek Kumar{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+<div class="space-y-8">
+
+    <div class="text-center scroll-reveal">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4 dark:text-white"> Articles & Write-ups</h1>
+        <p class="text-xl text-gray-600 mb-8 dark:text-white">
+            In-depth security analysis, cyber secruity write-ups, and technical documentation
+        </p>
+    </div>
+
+    <!-- Filter/Category Section -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg scroll-reveal">
+        <div class="flex flex-wrap gap-3">
+            <button class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-blue-600 dark:bg-gray-800 dark:text-white shadow-lg hover:shadow-xl hover:scale-105" data-filter="all">
+                All Articles
+            </button>
+            <button class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105" data-filter="ctf">
+                CTF Write-ups
+            </button>
+            <button class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105" data-filter="security">
+                Security Research
+            </button>
+        </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="space-y-6">
+        
+        <!-- Article 1: CTF Round 2 -->
+        <article class="article-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all scroll-reveal" data-category="ctf security">
+            <div class="md:flex">
+                <div class="md:w-1/3 bg-gradient-to-br from-blue-500 to-purple-600 p-8 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <i class="fas fa-shield-alt text-6xl mb-4"></i>
+                        <h3 class="text-2xl font-bold">CTF Challenge</h3>
+                        <p class="text-blue-100 mt-2">4 Vulnerabilities Exploited</p>
+                    </div>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium dark:bg-blue-900 dark:text-blue-300">CTF Write-up</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium dark:bg-purple-900 dark:text-purple-300">Web Security</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium dark:bg-green-900 dark:text-green-300">Mobile Security</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-3 dark:text-white">
+                        CloudSek Hiring CTF - Round 2
+                    </h2>
+                    <p class="text-gray-500 text-sm mb-4 dark:text-gray-400">
+                        <i class="fas fa-calendar mr-2"></i>December 2025
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-clock mr-2"></i>15 min read
+                    </p>
+                    <p class="text-gray-600 mb-4 dark:text-gray-300">
+                        A comprehensive security analysis covering four distinct challenges from CloudSek's hiring CTF. 
+                        Explores NITRO speed-based automation, XXE injection vulnerabilities, PHP type confusion in 
+                        multi-factor authentication, and Android APK reverse engineering with JWT forgery leading to 
+                        complete system compromise.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">XXE Injection</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">JWT Forgery</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Type Confusion</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Mobile Security</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">BeVigil</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Python Automation</span>
+                    </div>
+                    <a href="{{ url_for('article_ctf_round2') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Read Full Write-up
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Article 2: Boot Sequence -->
+        <article class="article-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all scroll-reveal" data-category="ctf security">
+            <div class="md:flex">
+                <div class="md:w-1/3 bg-gradient-to-br from-indigo-500 to-purple-700 p-8 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <i class="fas fa-rocket text-6xl mb-4"></i>
+                        <h3 class="text-2xl font-bold">SSTI to RCE</h3>
+                        <p class="text-indigo-100 mt-2">Complete System Takeover</p>
+                    </div>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium dark:bg-indigo-900 dark:text-indigo-300">CTF Write-up</span>
+                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium dark:bg-red-900 dark:text-red-300">SSTI</span>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium dark:bg-yellow-900 dark:text-yellow-300">RCE</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-3 dark:text-white">
+                        Boot Sequence - CloudSek Hiring CTF
+                    </h2>
+                    <p class="text-gray-500 text-sm mb-4 dark:text-gray-400">
+                        <i class="fas fa-calendar mr-2"></i>December 14, 2025
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-clock mr-2"></i>20 min read
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-star mr-2 text-yellow-500"></i>CVSS 10.0 (Critical)
+                    </p>
+                    <p class="text-gray-600 mb-4 dark:text-gray-300">
+                        An in-depth exploitation walkthrough of an orbital relay control system. Starting from hardcoded 
+                        credentials in JavaScript files, progressing through JWT secret cracking and token forgery, and 
+                        culminating in Server-Side Template Injection (SSTI) exploitation to achieve Remote Code Execution 
+                        on a Flask/Jinja2 application.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">SSTI</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">JWT Cracking</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Jinja2</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Flask</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">RCE</span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs dark:bg-gray-700 dark:text-gray-300">Privilege Escalation</span>
+                    </div>
+                    <a href="{{ url_for('article_boot_sequence') }}" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                        Read Full Write-up
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Placeholder for future articles -->
+        <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-12 text-center scroll-reveal dark:from-gray-800 dark:to-gray-700">
+            <i class="fas fa-pen-fancy text-6xl text-gray-400 mb-4 dark:text-gray-500"></i>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3 dark:text-white">More Articles Coming Soon!</h3>
+            <p class="text-gray-600 mb-6 max-w-2xl mx-auto dark:text-gray-300">
+                I'm constantly working on new security research, CTF challenges, and technical write-ups. 
+                Stay tuned for more in-depth analysis and educational content.
+            </p>
+            <a href="{{ url_for('contact') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Subscribe for Updates
+                <i class="fas fa-bell ml-2"></i>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Back to Research -->
+    <div class="text-center scroll-reveal">
+        <a href="{{ url_for('research') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Research & Publications
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .filter-btn.active {
+        background-color: #2563eb;
+        color: white;
+    }
+    
+    .article-card {
+        transition: all 0.3s ease;
+    }
+    
+    .article-card.hidden {
+        display: none;
+    }
+</style>
+
+<script>
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const articleCards = document.querySelectorAll('.article-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update active button
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            button.classList.add('active', 'bg-blue-600', 'text-white');
+            button.classList.remove('bg-gray-100', 'text-gray-700');
+            
+            // Filter articles
+            const filter = button.getAttribute('data-filter');
+            articleCards.forEach(card => {
+                if (filter === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    const categories = card.getAttribute('data-category');
+                    if (categories.includes(filter)) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}

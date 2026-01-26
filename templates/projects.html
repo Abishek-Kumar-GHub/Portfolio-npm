@@ -1,0 +1,279 @@
+<!-- templates/projects.html -->
+{% extends "base.html" %}
+
+{% block title %}Projects - Abishek Kumar{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<div class="space-y-12">
+    <!-- Page Header -->
+    <div class="text-center scroll-reveal">
+        <h1 class="text-5xl font-bold text-gray-800 dark:text-white mb-4">My Projects</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">A showcase of my Development and Cyber Security projects</p>
+    </div>
+
+    <!-- Project Categories Filter -->
+    <div class="flex flex-wrap justify-center gap-4 scroll-reveal">
+        <button onclick="filterProjects('all', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105">
+            All Projects
+        </button>
+        <button onclick="filterProjects('Web Development', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105">
+            Web Development
+        </button>
+        <button onclick="filterProjects('Cyber Security', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105">
+            Cyber Security
+        </button>
+        <button onclick="filterProjects('IoT', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105">
+            IoT
+        </button>
+        <button onclick="filterProjects('Full Stack Development', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105">
+            Full Stack
+        </button>
+        <button onclick="filterProjects('Machine Learning', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:scale-105">
+            Machine Learning
+        </button>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for project in projects %}
+        <div class="project-card glass-effect rounded-2xl p-6 shadow-lg card-hover scroll-reveal transition-all duration-300" data-category="{{ project.category }}">
+            <div class="flex items-center justify-between mb-4">
+                <span class="category-badge px-4 py-2 rounded-full text-sm font-semibold shadow-sm
+                    {% if project.category == 'Web Development' %}bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300
+                    {% elif project.category == 'Cyber Security' %}bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300
+                    {% elif project.category == 'IoT' %}bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300
+                    {% elif project.category == 'Machine Learning' %}bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300
+                    {% elif project.category == 'Data Science' %}bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300
+                    {% elif project.category == 'Full Stack Development' %}bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300
+                    {% endif %}">
+                    {{ project.category }}
+                </span>
+                {% if project.github %}
+                <a href="{{ project.github }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    <i class="fab fa-github text-2xl"></i>
+                </a>
+                {% endif %}
+            </div>
+            
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-3">{{ project.title }}</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{{ project.description }}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-6">
+                {% for tech in project.tech %}
+                <span class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm font-medium">{{ tech }}</span>
+                {% endfor %}
+            </div>
+            
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                {% if project.github %}
+                <a href="{{ project.github }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold transition-colors">
+                    <i class="fab fa-github text-lg"></i>
+                    View Code
+                </a>
+                {% endif %}
+                {% if project.info_link %}
+                <button onclick='openInfoModal({{ project.info_link | tojson }}, "{{ project.title }}")'
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-info-circle"></i>
+                    More Info
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Featured Project Spotlight -->
+    <section class="glass-effect rounded-2xl p-8 shadow-lg scroll-reveal">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <i class="fas fa-star text-white text-xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Featured Project</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div class="scroll-reveal">
+                <div class="inline-block bg-orange-100 dark:bg-orange-900 border border-orange-200 dark:border-orange-800 rounded-full px-4 py-2 text-sm text-orange-700 dark:text-orange-300 font-semibold mb-4">
+                    <i class="fas fa-rocket mr-2"></i>ISRO Project
+                </div>
+                <h3 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">ISRO Visualization Application</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-lg">
+                    A comprehensive Django-based web application developed during my internship at ISRO. 
+                    This project manages SSM-data and generates dynamic visualizations based on user-specified 
+                    date ranges, enhanced with robust security features and data management practices.
+                </p>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium">Python</span>
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium">Django</span>
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium">Data Visualization</span>
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium">Security</span>
+                </div>
+                <a href="https://github.com/Abishek-Kumar-GHub/ISRO-Vizualization-App" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <i class="fab fa-github"></i>
+                    Explore Project
+                </a>
+            </div>
+            
+            <div class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-8 rounded-2xl scroll-reveal border border-orange-200 dark:border-orange-800">
+                <div class="text-center">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-xl">
+                        <i class="fas fa-rocket text-5xl text-white"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">ISRO Collaboration</h4>
+                    <p class="text-gray-600 dark:text-gray-300">Professional internship project with India's space research organization</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+function filterProjects(category, event) {
+    const cards = document.querySelectorAll('.project-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    // Reset all buttons
+    buttons.forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+        btn.classList.add('bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300', 'border-2', 'border-gray-200', 'dark:border-gray-700');
+    });
+
+    // Set active button
+    event.target.classList.remove('bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300', 'border-2', 'border-gray-200', 'dark:border-gray-700');
+    event.target.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+
+    // Show/hide project cards with animation
+    cards.forEach((card, idx) => {
+        if (category === 'all' || card.dataset.category === category) {
+            card.style.display = 'block';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, idx * 100);
+        } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => { 
+                card.style.display = 'none'; 
+            }, 300);
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% block modal %}
+<!-- Modal Background -->
+<div id="infoModal" 
+     class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex justify-center items-center z-50 transition-all duration-300"
+     onclick="if(event.target === this) closeInfoModal()">
+
+    <!-- Modal Box -->
+    <div id="modalBox"
+         class="glass-effect rounded-2xl shadow-2xl p-8 w-11/12 sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-2/5 
+                transform scale-95 opacity-0 transition-all duration-300">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white">
+                Project Details
+            </h2>
+
+            <!-- Close Button -->
+            <button onclick="closeInfoModal()" 
+                    class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <i class="fas fa-times text-xl text-gray-600 dark:text-gray-400"></i>
+            </button>
+        </div>
+
+        <!-- Links Section -->
+        <div id="modalLinks" class="space-y-3"></div>
+
+    </div>
+</div>
+
+<script>
+// Open modal with animation
+function openInfoModal(links, title) {
+    const modal = document.getElementById("infoModal");
+    const box = document.getElementById("modalBox");
+    const titleElem = document.getElementById("modalTitle");
+    const linksElem = document.getElementById("modalLinks");
+
+    titleElem.textContent = title;
+    linksElem.innerHTML = "";
+
+    if (!links || links.length === 0) {
+        linksElem.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-info-circle text-4xl text-gray-400 dark:text-gray-600 mb-4"></i>
+                <p class="text-gray-600 dark:text-gray-400 text-lg">More details coming soon!</p>
+            </div>
+        `;
+    } else {
+        links.forEach((link, index) => {
+            const label = getLabelForLink(link, index);
+            const icon = getIconForLink(link);
+            linksElem.innerHTML += `
+                <a href="${link}" target="_blank" rel="noopener noreferrer"
+                   class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 font-medium">
+                    <i class="fas fa-${icon} text-xl"></i>
+                    ${label}
+                </a>
+            `;
+        });
+    }
+
+    modal.classList.remove("hidden");
+
+    setTimeout(() => {
+        box.classList.remove("scale-95", "opacity-0");
+        box.classList.add("scale-100", "opacity-100");
+    }, 10);
+}
+
+// Get label for link
+function getLabelForLink(link, index) {
+    if (!link) return "Link " + (index + 1);
+    if (link.includes("youtu")) return "Watch Demo Video";
+    if (link.includes("drive")) return "View Documentation";
+    if (link.includes("render") || link.includes("vercel") || link.includes("herokuapp")) return "Open Live Website";
+    return "Open Link " + (index + 1);
+}
+
+// Get icon for link
+function getIconForLink(link) {
+    if (!link) return "link";
+    if (link.includes("youtu")) return "play-circle";
+    if (link.includes("drive")) return "file-alt";
+    if (link.includes("render") || link.includes("vercel") || link.includes("herokuapp")) return "external-link-alt";
+    return "link";
+}
+
+// Close modal with animation
+function closeInfoModal() {
+    const modal = document.getElementById("infoModal");
+    const box = document.getElementById("modalBox");
+
+    box.classList.add("scale-95", "opacity-0");
+    box.classList.remove("scale-100", "opacity-100");
+
+    setTimeout(() => {
+        modal.classList.add("hidden");
+    }, 300);
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeInfoModal();
+    }
+});
+</script>
+{% endblock %}

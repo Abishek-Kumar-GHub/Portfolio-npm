@@ -1,0 +1,221 @@
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+
+@keyframes chaoticGradient {
+  0% {
+    background-position: 10% 20%, 80% 70%, 50% 50%;
+  }
+  25% {
+    background-position: 70% 40%, 20% 30%, 80% 60%;
+  }
+  50% {
+    background-position: 30% 80%, 60% 20%, 20% 40%;
+  }
+  75% {
+    background-position: 80% 60%, 40% 80%, 60% 20%;
+  }
+  100% {
+    background-position: 10% 20%, 80% 70%, 50% 50%;
+  }
+}
+
+.chaotic-gradient {
+  background: linear-gradient(120deg, #0d0d1a, #1a1a2e, #162447, #1f4068),
+              linear-gradient(60deg, #1f4068, #162447, #1a1a2e, #0d0d1a),
+              linear-gradient(90deg, #162447, #0d0d1a, #1f4068, #1a1a2e);
+  background-size: 300% 300%;
+  background-blend-mode: screen;
+  animation: chaoticGradient 25s ease infinite;
+}
+
+
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+@font-face {
+    font-family: 'Mazzard SoftM Light';
+    src: url('../fonts/mazzard-soft-font-1758841782-0/MazzardSoftM-Light.otf') format('opentype');
+    font-weight: 500;
+    /* Medium weight */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Mazzard SoftM Italic';
+    src: url('../fonts/mazzard-soft-font-1758841782-0/MazzardSoftM-LightItalic.otf') format('opentype');
+    font-weight: 500;
+    /* Medium weight */
+    font-style: italic;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    font-family: 'Mazzard SoftM Light', Arial, sans-serif;
+}
+
+#navigation-bar {
+    font-family: 'Mazzard SoftM Italic', Arial, sans-serif;
+}
+
+#mobile-menu {
+    font-family: 'Mazzard SoftM Italic', Arial, sans-serif;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Print styles for resume */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+
+    .bg-gradient-to-br {
+        background: #f8f9fa !important;
+        color: #333 !important;
+    }
+}
+
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    /* smaller movement */
+    transition: opacity 0.30s ease-out, transform 0.20s ease-out;
+    /* faster */
+}
+
+.scroll-reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+
+#navigation-bar {
+  position: relative;
+}
+
+#navigation-bar a {
+  position: relative;
+  padding-bottom: 0.5rem; /* space for the underline */
+  transition: color 0.3s ease;
+}
+
+#navigation-bar a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #4d7ac7; /* underline color */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+#navigation-bar a.active::after,
+#navigation-bar a:hover::after {
+  transform: scaleX(1);
+}
+
+.dark .bg-white {
+    background-color: #1f2937; /* Tailwind gray-800 */
+}
+
+.dark .text-gray-600 {
+    color: #d1d5db; /* Tailwind gray-300 */
+}
+
+.dark .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.4);
+}
+.prose h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h2 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.prose h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+/* Restore lists inside Tailwind Typography */
+.prose ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.prose ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.prose li {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+

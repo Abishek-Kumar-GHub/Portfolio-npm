@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Flask
+instance/
+.webassets-cache
+
+# Node.js / npm
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tailwind CSS generated files
+static/css/output.css
+static/css/output.css.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+base1.html

