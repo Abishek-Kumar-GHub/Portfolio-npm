@@ -1,0 +1,390 @@
+    @media (hover: none) and (pointer: coarse) {
+        * {
+            cursor: auto !important;
+        }
+
+        #cursor-main,
+        #cursor-dot {
+            display: none !important;
+        }
+    }
+
+    /* Global cursor hide (desktop only) */
+    * {
+        cursor: none !important;
+    }
+
+    /* Particle Canvas */
+    #particle-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+        background: #E6E1EB;
+        /* Light mode background - Pale Lilac */
+    }
+
+    /* Dark mode particle canvas background */
+    .dark #particle-canvas {
+        background: #110E15;
+        /* Night */
+    }
+
+    /* Main cursor */
+    #cursor-main {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #D6B6C6;
+        border-radius: 50%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        transition: transform 0.1s ease-out;
+    }
+
+    /* Small dot that follows faster */
+    #cursor-dot {
+        width: 6px;
+        height: 6px;
+        background: #D6B6C6;
+        border-radius: 50%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 100000;
+        transform: translate(-50%, -50%);
+        transition: transform 0.05s ease-out;
+    }
+
+    /* When cursor hovers elements */
+    .cursor-hover {
+        transform: translate(-50%, -50%) scale(1.5);
+        background: rgba(214, 182, 198, 0.2);
+    }
+
+    /* Glassmorphism */
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        outline: none !important;
+        /* Prevent any outline */
+    }
+
+    .dark .glass-effect {
+        /* Enhanced glass background with more transparency */
+        background: rgba(31, 41, 55, 0.4);
+
+        /* Subtle backdrop blur for frosted glass effect */
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+
+        /* Brighter, more visible border */
+        border: 1px solid rgba(148, 163, 184, 0.2);
+
+        /* Subtle inner glow */
+        box-shadow:
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+            0 4px 6px -1px rgba(0, 0, 0, 0.3),
+            0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+        /* Remove outlines */
+        outline: none !important;
+    }
+
+    /* Optional: Add subtle highlight on top edge */
+    .dark .glass-effect::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.15),
+                transparent);
+    }
+
+    /* Prevent outline when glass-effect is active or focused */
+    .glass-effect:focus,
+    .glass-effect:focus-within,
+    .glass-effect:active {
+        outline: none !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Scroll Reveal */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .scroll-reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Click Ripple Effect with Color */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple-animation 0.8s ease-out;
+        pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+        0% {
+            transform: scale(0);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* Button Glow */
+    .btn-glow {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-glow::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-glow:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    /* Card Hover Effects */
+    .card-hover {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .card-hover::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px;
+        background: linear-gradient(135deg, #D6B6C6, #C9C2CC);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .card-hover:hover::before {
+        opacity: 0.5;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .card-hover:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    #navigation-bar a {
+        position: relative;
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #navigation-bar a:hover {
+        transform: scale(1.02);
+    }
+
+    #navigation-bar a.nav-link-active:hover {
+        transform: translateY(0);
+    }
+
+    body {
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .magnetic {
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Page Transition Styles */
+    main {
+        opacity: 0;
+        transform: translateY(0);
+    }
+
+    main.page-loaded {
+        opacity: 1;
+    }
+
+    /* MOBILE MENU FIXES */
+    /* Slide down animation for mobile menu */
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            max-height: 500px;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            max-height: 500px;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(-10px);
+        }
+    }
+
+    /* Mobile menu transition */
+    #mobile-menu {
+        overflow: hidden;
+        transition: all 0.3s ease-in-out;
+    }
+
+    #mobile-menu.show {
+        animation: slideDown 0.3s ease-in-out forwards;
+    }
+
+    #mobile-menu.hide {
+        animation: slideUp 0.3s ease-in-out forwards;
+    }
+
+    /* Ensure mobile menu is properly hidden */
+    #mobile-menu.hidden {
+        display: none !important;
+        opacity: 0;
+        max-height: 0;
+    }
+
+    /* Header container smooth transition */
+    #header-container {
+        transition: border-radius 0.3s ease-in-out;
+        outline: none !important;
+        /* Prevent focus outline */
+    }
+
+    /* Remove focus outline from all interactive elements in header */
+    #header-container *:focus,
+    #header-container *:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Specifically target the mobile menu button */
+    #mobile-menu-button {
+        outline: none !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        /* Tailwind ring utilities override */
+        --tw-ring-offset-shadow: 0 0 #0000 !important;
+        --tw-ring-shadow: 0 0 #0000 !important;
+    }
+
+    #mobile-menu-button:focus,
+    #mobile-menu-button:focus-visible,
+    #mobile-menu-button:active,
+    #mobile-menu-button:hover,
+    #mobile-menu-button.active {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: transparent !important;
+        /* Tailwind ring utilities override */
+        --tw-ring-offset-shadow: 0 0 #0000 !important;
+        --tw-ring-shadow: 0 0 #0000 !important;
+    }
+
+    /* Remove any webkit tap highlight */
+    #mobile-menu-button,
+    #header-container button {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Ensure the icon inside button also has no outline */
+    #mobile-menu-button i,
+    #mobile-menu-button * {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Mobile menu button active state */
+    #mobile-menu-button.active i {
+        transform: rotate(90deg);
+        transition: transform 0.3s ease;
+    }
+
+    /* Ensure mobile menu items are clickable */
+    #mobile-menu a {
+        position: relative;
+        z-index: 20;
+        pointer-events: auto;
+    }
+
+    /* Enhanced Navigation Hover - Matches Active State */
+    #navigation-bar a:hover {
+        background-color: rgb(232 199 206);
+        /* bg-rose-dust */
+    }
+
+    .dark #navigation-bar a:hover {
+        background-color: rgb(67 14 24);
+        /* dark:bg-chocolate-cosmos */
+    }
+
+    /* Mobile Menu Hover */
+    #mobile-menu a.mobile-nav-link:hover {
+        background-color: rgba(232, 199, 206, 0.8) !important;
+        color: #411D2B !important;
+        /* dark-purple */
+    }
+
+    .dark #mobile-menu a.mobile-nav-link:hover {
+        background-color: rgba(67, 14, 24, 0.8) !important;
+        color: #D6B6C6 !important;
+        /* misty-plum */
+    }
