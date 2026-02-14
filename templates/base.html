@@ -113,10 +113,38 @@
     }
 
     .dark .glass-effect {
-      background: rgba(31, 41, 55, 0.6);
-      border: 1px solid rgba(75, 85, 99, 0.3);
+      /* Enhanced glass background with more transparency */
+      background: rgba(31, 41, 55, 0.4);
+
+      /* Subtle backdrop blur for frosted glass effect */
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+
+      /* Brighter, more visible border */
+      border: 1px solid rgba(148, 163, 184, 0.2);
+
+      /* Subtle inner glow */
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+        0 4px 6px -1px rgba(0, 0, 0, 0.3),
+        0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+      /* Remove outlines */
       outline: none !important;
-      /* Prevent any outline */
+    }
+
+    /* Optional: Add subtle highlight on top edge */
+    .dark .glass-effect::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.15),
+          transparent);
     }
 
     /* Prevent outline when glass-effect is active or focused */
@@ -229,7 +257,6 @@
 
     #navigation-bar a.nav-link-active:hover {
       transform: translateY(0);
-      background-color: rgba(92, 14, 0, 0.727);
     }
 
     body {
@@ -370,6 +397,30 @@
       z-index: 20;
       pointer-events: auto;
     }
+
+    /* Enhanced Navigation Hover - Matches Active State */
+    #navigation-bar a:hover {
+      background-color: rgb(232 199 206);
+      /* bg-rose-dust */
+    }
+
+    .dark #navigation-bar a:hover {
+      background-color: rgb(67 14 24);
+      /* dark:bg-chocolate-cosmos */
+    }
+
+    /* Mobile Menu Hover */
+    #mobile-menu a.mobile-nav-link:hover {
+      background-color: rgba(232, 199, 206, 0.8) !important;
+      color: #411D2B !important;
+      /* dark-purple */
+    }
+
+    .dark #mobile-menu a.mobile-nav-link:hover {
+      background-color: rgba(67, 14, 24, 0.8) !important;
+      color: #D6B6C6 !important;
+      /* misty-plum */
+    }
   </style>
 </head>
 
@@ -495,7 +546,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-900 dark:bg-gray-950 text-white py-12 mt-16 transition-colors duration-300 relative z-10">
+  <footer class="bg-night dark:bg-night text-white py-12 mt-16 transition-colors duration-300 relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
@@ -594,7 +645,7 @@
         if (isActive) {
           link.classList.add('bg-rose-dust/80', 'dark:bg-chocolate-cosmos/80', 'text-dark-purple', 'dark:text-misty-plum', 'shadow-sm');
         } else {
-          link.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-white/40', 'dark:hover:bg-white/10');
+          link.classList.add('text-gray-600', 'dark:text-gray-300');
         }
       });
     };

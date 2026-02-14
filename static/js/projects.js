@@ -64,7 +64,7 @@ function openInfoModal(links, title) {
             const icon = getIconForLink(link)
             linksElem.innerHTML += `
         <a href="${link}" target="_blank" rel="noopener noreferrer"
-           class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 font-medium">
+           class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gradient-to-r dark:from-night dark:to-chocolate-cosmos from-lavender-gray to-misty-plum text-black dark:text-white rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105 font-medium">
           <i class="fas fa-${icon} text-xl"></i>
           ${label}
         </a>

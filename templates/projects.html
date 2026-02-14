@@ -14,39 +14,34 @@
 
     <!-- Project Categories Filter -->
     <div class="flex flex-wrap justify-center gap-4 scroll-reveal">
-        <button onclick="filterProjects('all', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105">
+        <button onclick="filterProjects('all', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300 
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-105">
             All Projects
         </button>
         <button onclick="filterProjects('Web Development', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105
-">
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-105">
             Web Development
         </button>
         <button onclick="filterProjects('Cyber Security', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105
-">
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-105">
             Cyber Security
         </button>
         <button onclick="filterProjects('IoT', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105
-">
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-10">
             IoT
         </button>
         <button onclick="filterProjects('Full Stack Development', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105
-">
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-105">
             Full Stack
         </button>
         <button onclick="filterProjects('Machine Learning', event)" class="filter-btn px-6 py-3 rounded-full font-medium transition-all duration-300 bg-white/60 dark:bg-raisin-black text-gray-700 dark:text-gray-300
-hover:bg-amber-200 hover:text-gray-900
-dark:hover:border-misty-plum hover:scale-105
-">
+        hover:bg-misty-plum hover:text-gray-900
+        dark:hover:border-misty-plum hover:scale-105">
             Machine Learning
         </button>
     </div>
@@ -95,7 +90,8 @@ dark:hover:border-misty-plum hover:scale-105
                 </a>
                 {% endif %}
                 {% if project.info_link %}
-                <button onclick='openInfoModal({{ project.info_link | tojson }}, "{{ project.title }}")'
+                <button
+                    onclick="openInfoModal({{ project.info_link | tojson | forceescape }}, {{ project.title | tojson | forceescape }})"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-rose-dust dark:bg-night text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                     <i class="fas fa-info-circle"></i>
                     More Info
